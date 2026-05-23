@@ -4,6 +4,10 @@
 (function () {
 	'use strict';
 
+	const VERSION = '1.0.3';
+	const LAST_CHANGE = 'Set Game.keys directly for ascension screen scrolling';
+	console.log(`[CookiePad] v${VERSION} loaded — last change: ${LAST_CHANGE}`);
+
 	const PAD_SIZE = 180;
 	const BTN_SIZE = 50;
 
