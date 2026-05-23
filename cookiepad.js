@@ -4,8 +4,8 @@
 (function () {
 	'use strict';
 
-	const VERSION = '1.0.6';
-	const LAST_CHANGE = 'Show version number in the hover mode button';
+	const VERSION = '1.0.7';
+	const LAST_CHANGE = 'Use 200ms timeout to reset hoverConsuming so click is reliably blocked';
 	console.log(`[CookiePad] v${VERSION} loaded — last change: ${LAST_CHANGE}`);
 
 	const PAD_SIZE = 180;
@@ -159,20 +159,16 @@
 			clientY: e.clientY,
 		}));
 
-		// Deactivate hover mode after one use
+		// Deactivate hover mode after one use.
+		// Keep hoverConsuming active for 200ms to block the subsequent
+		// pointerup/click events that are part of this same tap.
 		hoverMode = false;
 		hoverBtn.style.background = 'rgba(0, 0, 0, 0.6)';
+		setTimeout(function () { hoverConsuming = false; }, 200);
 	}, true);
 
 	// Block the rest of the tap sequence so the click never fires
-	document.addEventListener('pointerup', function (e) {
-		if (!hoverConsuming) return;
-		if (pad.contains(e.target)) return;
-		e.preventDefault();
-		e.stopPropagation();
-		e.stopImmediatePropagation();
-		hoverConsuming = false;
-	}, true);
+	document.addEventListener('pointerup', blockEvent, true);
 	document.addEventListener('click', blockEvent, true);
 	document.addEventListener('touchstart', blockEvent, true);
 	document.addEventListener('touchend', blockEvent, true);
