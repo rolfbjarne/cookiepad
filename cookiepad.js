@@ -4,8 +4,8 @@
 (function () {
 	'use strict';
 
-	const VERSION = '1.0.5';
-	const LAST_CHANGE = 'Fix hover mode not resetting: move hoverConsuming reset to pointerup';
+	const VERSION = '1.0.6';
+	const LAST_CHANGE = 'Show version number in the hover mode button';
 	console.log(`[CookiePad] v${VERSION} loaded — last change: ${LAST_CHANGE}`);
 
 	const PAD_SIZE = 180;
@@ -111,6 +111,12 @@
 			? 'rgba(0, 150, 0, 0.8)'
 			: 'rgba(0, 0, 0, 0.6)';
 	});
+	hoverBtn.innerHTML = `<span style="font-size:20px">👆</span><span style="font-size:8px;display:block;line-height:1;margin-top:-4px;opacity:0.6">${VERSION}</span>`;
+	hoverBtn.style.lineHeight = 'normal';
+	hoverBtn.style.display = 'flex';
+	hoverBtn.style.flexDirection = 'column';
+	hoverBtn.style.alignItems = 'center';
+	hoverBtn.style.justifyContent = 'center';
 
 	// Hover mode: intercept taps and trigger mouseover/tooltip instead of click.
 	// We need to block the entire tap sequence (pointerdown, pointerup, click,
