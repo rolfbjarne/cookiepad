@@ -61,6 +61,19 @@
 
 	function sendKey(key) {
 		const code = KEY_CODES[key] || 0;
+
+		// Cookie Clicker tracks key state in Game.keys and checks it
+		// in its game loop — synthetic KeyboardEvent dispatch doesn't
+		// update that map reliably. Set the state directly.
+		if (typeof Game !== 'undefined' && Game.keys) {
+			Game.keys[code] = 1;
+			setTimeout(function () {
+				Game.keys[code] = 0;
+			}, 150);
+			return;
+		}
+
+		// Fallback: dispatch events if Game.keys isn't available yet
 		const opts = {
 			key: key,
 			code: key,
@@ -69,8 +82,6 @@
 			bubbles: true,
 			cancelable: true,
 		};
-		// Dispatch on both document and window — Cookie Clicker listens
-		// in different places depending on the screen.
 		document.dispatchEvent(new KeyboardEvent('keydown', opts));
 		window.dispatchEvent(new KeyboardEvent('keydown', opts));
 		setTimeout(function () {
