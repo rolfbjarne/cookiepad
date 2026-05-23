@@ -4,8 +4,8 @@
 (function () {
 	'use strict';
 
-	const VERSION = '1.0.4';
-	const LAST_CHANGE = 'Fix hover mode: block entire tap sequence (pointerup/click/touch) to prevent normal click';
+	const VERSION = '1.0.5';
+	const LAST_CHANGE = 'Fix hover mode not resetting: move hoverConsuming reset to pointerup';
 	console.log(`[CookiePad] v${VERSION} loaded — last change: ${LAST_CHANGE}`);
 
 	const PAD_SIZE = 180;
@@ -159,8 +159,7 @@
 	}, true);
 
 	// Block the rest of the tap sequence so the click never fires
-	document.addEventListener('pointerup', blockEvent, true);
-	document.addEventListener('click', function (e) {
+	document.addEventListener('pointerup', function (e) {
 		if (!hoverConsuming) return;
 		if (pad.contains(e.target)) return;
 		e.preventDefault();
@@ -168,6 +167,7 @@
 		e.stopImmediatePropagation();
 		hoverConsuming = false;
 	}, true);
+	document.addEventListener('click', blockEvent, true);
 	document.addEventListener('touchstart', blockEvent, true);
 	document.addEventListener('touchend', blockEvent, true);
 
