@@ -4,8 +4,8 @@
 (function () {
 	'use strict';
 
-	const VERSION = '1.0.3';
-	const LAST_CHANGE = 'Set Game.keys directly for ascension screen scrolling';
+	const VERSION = '1.0.4';
+	const LAST_CHANGE = 'Fix hover mode: block entire tap sequence (pointerup/click/touch) to prevent normal click';
 	console.log(`[CookiePad] v${VERSION} loaded — last change: ${LAST_CHANGE}`);
 
 	const PAD_SIZE = 180;
@@ -112,18 +112,31 @@
 			: 'rgba(0, 0, 0, 0.6)';
 	});
 
-	// Hover mode: intercept taps and trigger mouseover/tooltip instead of click
+	// Hover mode: intercept taps and trigger mouseover/tooltip instead of click.
+	// We need to block the entire tap sequence (pointerdown, pointerup, click,
+	// touchstart, touchend) to prevent the normal click from firing.
+	let hoverConsuming = false;
+
+	function blockEvent(e) {
+		if (!hoverMode && !hoverConsuming) return;
+		if (pad.contains(e.target)) return;
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+	}
+
 	document.addEventListener('pointerdown', function (e) {
 		if (!hoverMode) return;
-		// Don't intercept taps on the pad itself
 		if (pad.contains(e.target)) return;
 
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 
+		hoverConsuming = true;
+
 		// Dispatch mouseover/mouseenter to trigger tooltip
-		const target = e.target;
+		const target = document.elementFromPoint(e.clientX, e.clientY) || e.target;
 		target.dispatchEvent(new MouseEvent('mouseenter', {
 			bubbles: true,
 			clientX: e.clientX,
@@ -143,6 +156,19 @@
 		// Deactivate hover mode after one use
 		hoverMode = false;
 		hoverBtn.style.background = 'rgba(0, 0, 0, 0.6)';
-	}, true); // capture phase to intercept before anything else
+	}, true);
+
+	// Block the rest of the tap sequence so the click never fires
+	document.addEventListener('pointerup', blockEvent, true);
+	document.addEventListener('click', function (e) {
+		if (!hoverConsuming) return;
+		if (pad.contains(e.target)) return;
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		hoverConsuming = false;
+	}, true);
+	document.addEventListener('touchstart', blockEvent, true);
+	document.addEventListener('touchend', blockEvent, true);
 
 })();
