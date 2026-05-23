@@ -52,12 +52,30 @@
 		return btn;
 	}
 
+	const KEY_CODES = {
+		'ArrowUp': 38,
+		'ArrowDown': 40,
+		'ArrowLeft': 37,
+		'ArrowRight': 39,
+	};
+
 	function sendKey(key) {
-		const opts = { key: key, bubbles: true };
+		const code = KEY_CODES[key] || 0;
+		const opts = {
+			key: key,
+			code: key,
+			keyCode: code,
+			which: code,
+			bubbles: true,
+			cancelable: true,
+		};
+		// Dispatch on both document and window — Cookie Clicker listens
+		// in different places depending on the screen.
 		document.dispatchEvent(new KeyboardEvent('keydown', opts));
-		// Small delay then keyup
+		window.dispatchEvent(new KeyboardEvent('keydown', opts));
 		setTimeout(function () {
 			document.dispatchEvent(new KeyboardEvent('keyup', opts));
+			window.dispatchEvent(new KeyboardEvent('keyup', opts));
 		}, 50);
 	}
 

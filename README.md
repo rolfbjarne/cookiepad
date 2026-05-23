@@ -12,7 +12,11 @@ A Cookie Clicker addon that adds touch-friendly controls for playing on iPad and
 Load as a Cookie Clicker mod:
 
 ```javascript
-Game.LoadMod('https://your-host/cookiepad.js');
+Game.LoadMod('https://rolfbjarne.github.io/cookiepad/cookiepad.js');
+```
+
+```javascript
+javascript:Game.LoadMod('https://rolfbjarne.github.io/cookiepad/cookiepad.js');
 ```
 
 Or paste the contents of `cookiepad.js` into the browser console.
